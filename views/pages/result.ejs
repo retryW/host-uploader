@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Codius Pod Uploader</title>
+
+	<!-- css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.3/css/bulma.css">
+	<style>
+		.box {
+			max-width: 500px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.note {
+			white-space: pre-line;
+		}
+		.wrapper {
+			text-align: center;
+		}
+	</style>
+
+	<!-- js -->
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+	<script src="https://cdn.coil.com/donate.js"></script>
+	<script>
+		window.WebMonetizationScripts.donate({
+			paymentPointer: '$twitter.xrptipbot.com/retryW_'
+		})
+	</script>
+</head>
+<body>
+
+  <div class="hero is-fullheight is-info is-bold">
+  <div class="hero-body">
+  <div class="container">
+    <h1 class="title has-text-centered">Codius Pod Upload Tool</h1>
+    <div class="box">
+
+      <!-- returned data  -->
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b><%= title %></b>
+			</h1>
+			<p has-text-left>
+			<pre><%= output %></pre>
+			</p>
+		</div>
+		<% if(success === 1) { %>
+		<div id="url" class="wrapper">
+			<!-- Takes user to the contract they just uploaded based on URL returned from upload function -->
+				<button type="submit" formaction="<%= url %>" id="browse_button" class="button is-danger">
+					Click me to view the uploaded contract!         
+				</button>
+		</div>
+		<% } %>
+		</form>
+	</div>
+	<!-- Go to troubleshooting page -->
+	<div class="box">
+		<div class="wrapper">
+			<form method="get" action="/help">
+				<button type="submit" id="help_button" class="button is-link">
+					Click me for Troubleshooting help            
+				</button>
+			</form>
+        </div>
+	</div>
+	<div class="box">
+		<!-- Shameless plug -->
+		<div class="field has-text-centered">
+			<a amount="1" size="275" to="retryW_" network="twitter" href="https://www.xrptipbot.com" target="_blank"></a>
+			<script async src="https://www.xrptipbot.com/static/donate/tipper.js" charset="utf-8"></script>
+			<p>
+				Feel free to send a tip if my upload tool helped!
+				<br>
+				<br>
+				<code>
+					rpbvDUFjb1RZYfMGoy8ki8itHNEXaeCALE
+				</code>
+				<br>
+				Or donate some zerps to the above address :)
+			</p>
+		</div>
+	</div>
+    </div>
+  </div>
+  </div>
+  </div>
+</body>
+</html>

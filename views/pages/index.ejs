@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta charset="UTF-8">
+	<title>Codius Pod Uploader</title>
+
+	<!-- css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.3/css/bulma.css">
+	<style>
+		.box {
+			max-width: 500px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.columns {
+			max-width: 500px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.note {
+			white-space: pre-line;
+		}
+			.myDiv {
+			display: inline-block;
+		}
+		.myLoader {
+			display: inline-block;
+			border: 16px solid #f3f3f3; /* Light grey */
+			border-top: 16px solid #3498db; /* Blue */
+			border-radius: 50%;
+			width: 120px;
+			height: 120px;
+			animation: spin 2s linear infinite;
+		}
+		.wrapper{
+			text-align: center;
+		}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+	</style>
+	<!-- js -->
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+	<script src="https://cdn.coil.com/donate.js"></script>
+	<script>
+		window.WebMonetizationScripts.donate({
+			paymentPointer: '$twitter.xrptipbot.com/retryW_'
+		})
+	</script>
+	</head>
+	<body>
+
+	<div class="hero is-fullheight is-info is-bold">
+		<div class="hero-body">
+			<div class="container">
+				<h1 class="title has-text-centered">Codius Pod Upload Tool</h1>
+				<div class="box">
+					<!-- hostname form  -->
+					<form id="hostname-form" @submit.prevent="processForm">
+						<!-- hostname -->
+						<div class="field">
+							<label class="label">Hostname</label>
+							<input 
+								type="text" 
+								class="input" 
+								name="name_hostname"
+								v-model="hostname"
+								@blur="validateHostname"
+								method="post"
+								placeholder="codius.example.com">
+							<!-- Show if hostname validation check fails -->
+							<p class="help is-danger" v-if="errors.hostname">
+								Please enter a valid hostname.
+							</p>
+						</div>
+
+						<!-- submit button -->
+						<div class="field has-text-right">
+							<button type="submit" id="submit_button" v-show="!hasClicked" class="button is-danger">
+								Submit            
+							</button>
+						</div>
+						<!-- Show during upload -->
+						<div id="myDiv" class="note" v-show="hasClicked">
+							<b>Uploading...</b> (this can take a while)
+						</div>
+						<!-- Spinning circle -->
+						<div id="myLoader" class="loader" v-show="hasClicked"></div>
+					</form>
+				</div>
+				<div class="box">
+					<div class="wrapper">
+						<form method="get" action="/help">
+							<button type="submit" id="help_button" class="button is-link">
+								Click me for Troubleshooting help            
+							</button>
+						</form>
+					</div>
+				</div>
+				<!-- Stats -->
+				<div class="columns">
+					<div class="column">
+						<p class="wrapper">
+							<b>Successful uploads:</b><br></br><%= count %>
+						</p>
+					</div>
+					<div class="column">
+						<p class="wrapper">
+							<b>Last successful host:</b><br></br><%= latest %>
+						</p>
+					</div>
+				</div>
+				<div class="wrapper">
+					<br></br>
+					<p>Please note this tool is aimed to test and troubleshoot a codius host.</p>
+					<p>Do not setup scripted runs of the tool for constant monitoring or any other reasons.</p>
+					<p>Suspicious use of this tool will result in a ban.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- js -->
+	<script>
+	// vue
+	var app = new Vue({
+		el: '#hostname-form',
+		data: {
+			hostname: '',
+			hasClicked: false,
+			receivedOutput: false,
+			errors: {
+			hostname: false
+			}
+		},
+		methods: {
+			// Process hostname form
+			processForm: function() {
+				// Setup params
+				params = this.$data.hostname;
+				method = "post";
+				path = "/";
+				
+				// Change hasClicked to disable double clicks
+				this.$data.hasClicked = true;
+				
+				var form = document.createElement("form");
+				form.setAttribute("method", method);
+				form.setAttribute("action", path);
+
+				// Create hidden form from actual form details
+				var hiddenField = document.createElement("input");
+				hiddenField.setAttribute("type", "hidden");
+				hiddenField.setAttribute("name", "hostname");
+				hiddenField.setAttribute("value", params);
+
+				form.appendChild(hiddenField);
+				
+				// Send to server
+				document.body.appendChild(form);
+				form.submit();
+			},
+			validateHostname: function() {
+				const isValid = window.isValidHostname(this.hostname);
+				this.errors.hostname = !isValid;
+			}
+		}
+	});
+	// Check for (somewhat) valid hostname
+	function isValidHostname(hostname) {
+		var re = /^(([^<>()\[\]\\.,;:\s."]+(\.[^<>()\[\]\\.,;:\s."]+)*)|(".+")).((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(hostname);
+	}
+	</script>
+</body>
+</html>

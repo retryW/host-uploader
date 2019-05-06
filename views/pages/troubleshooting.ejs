@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Troubleshooting</title>
+
+	<!-- css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.3/css/bulma.css">
+	<style>
+		.box {
+			max-width: 800px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.note {
+			white-space: pre-line;
+		}
+		.wrapper {
+			text-align: center;
+		}
+	</style>
+
+	<!-- js -->
+	<script src="https://unpkg.com/vue"></script>
+    <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+	<script src="https://cdn.coil.com/donate.js"></script>
+	<script>
+		window.WebMonetizationScripts.donate({
+			paymentPointer: '$twitter.xrptipbot.com/retryW_'
+		})
+	</script>
+</head>
+<body>
+
+  <div class="hero is-fullheight is-info is-bold">
+  <div class="hero-body">
+  <div class="container">
+    <h1 class="title has-text-centered">Troubleshooting</h1>
+    <div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>invalid json response body at [hostname] … reason: Unexpected token < in JSON at position 0</b>
+			</h1>
+			<p has-text-left>
+			<pre>This is a known codius bug on the very first upload.
+Try uploading again (without restarting services) and it should succeed (as well as all
+subsequent uploads).
+
+Issue tracked on codius github: <a href="https://github.com/codius/codius/issues/43">https://github.com/codius/codius/issues/43</a></pre>
+			</p>
+		</div>
+		</div>
+		<div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>Request Failed</b>
+			</h1>
+			<p has-text-left>
+			<pre>This usually indicates levelDB issues inside hyperd (caused by restarting hyperd with pods running).
+Try removing the residual container info. Removing everything contained in the following location, then restart hyperd:
+	<b>systemctl stop hyperd
+	rm -rf /var/lib/hyper/containers/*
+	rm -rf /var/lib/hyper/hosts/*
+	systemctl start hyperd</b>
+
+Note: it is safer to check your logs for the culprit container, but if you're just debugging a new host,
+remove anything in that folder should do the trick.
+</pre>
+			</p>
+		</div>
+		</div>
+						    <div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>{"statusCode":503,"error":"Service Unavailable","message":"Service Unavailable"}</b>
+			</h1>
+			<p has-text-left>
+			<pre>If this code appears when browsing to the pod URL it likely means your server 
+hasn't had enough time to start the pod.
+Each pod is an application after all, and needs time to turn on.
+
+<b>Wait about 5 seconds then hit refresh. It should start working</b></pre>
+			</p>
+		</div>
+      </form>
+    </div>
+	<div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>504 Gateway Timout</b>
+			</h1>
+			<p has-text-left>
+			<pre>This means your host never returned a response. Try restarting services:
+	<b>systemctl restart hyperd
+	systemctl restart moneyd-xrp
+	systemctl restart codiusd</b>
+
+If restarting the services doesn't work, run moneyd in debug mode to look for errors:
+<b>
+	systemctl stop moneyd-xrp
+	DEBUG=* moneyd xrp:start
+</b>
+Feel free to contact me or others on Gitter for help with any errors you find:
+https://gitter.im/codius/codius-chat
+
+
+The following is one error you may find in your moneyd logs/debug output:
+
+<b>connector:alert-middleware warn generating alert for account=parent triggeredBy=g.scylla message="exceeded maximum balance."</b>
+
+This means the upstream node is stalling when trying to settle your balance, some nodes are known to have issues. 
+You should cancel the payment channel and then create a new one. You will be refunded the 10 XRP used to create the channel,
+minus the outstanding balance shown using 'moneyd xrp:info'.
+	Follow : https://github.com/codius/codiusd/wiki/Troubleshooting#creating-a-new-channel-with-moneyd
+	(hit me up on Twitter if you need help with this)
+</pre>
+			</p>
+		</div>
+		</div>
+		    <div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>502 Internal Server Error</b>
+			</h1>
+			<p has-text-left>
+			<pre>This usually indicates an issue with hyperd. Try restarting it.
+	<b>systemctl restart hyperd</b>
+
+If you still receive this error, try investigate the logs for errors.
+</pre>
+			</p>
+		</div>
+		</div>
+		    <div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>Only absolute URLs are supported</b>
+			</h1>
+			<p has-text-left>
+			<pre>This has to do with the hostname format sent to the codius server.
+Make sure you enter your hostname with no white space afterwards, and no https:// beforehand, 
+like so:
+
+	<b>codius.example.com</b></pre>
+			</p>
+		</div>
+		</div>
+
+	</form>
+		    <div class="box">
+
+      <form id="results-form">
+		<div class="field">
+			<h1>
+				<b>404 Page not Found when browsing to contract URL</b>
+			</h1>
+			<p has-text-left>
+			<pre>Unsure on the fix for this one.
+I'd suggest double checking your DNS settings for wildcard subdomains.
+Each contract gets it's own subdomain on your host.
+
+	<b>*.codius.example.com</b></pre>
+			</p>
+		</div>
+      </form>
+    </div>
+	</form>
+	<div class="box">
+		<div class="wrapper">
+			<form method="get" action="/">
+				<button type="submit" id="back_button" class="button is-link">
+					Back to Upload Tool            
+				</button>
+			</form>
+        </div>
+	</div>
+	</div>
+    </div>
+  </div>
+  </div>
+  </div>
+</body>
+</html>
